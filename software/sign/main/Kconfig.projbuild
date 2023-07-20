@@ -1,0 +1,68 @@
+menu "Sign Configuration"
+
+	config AP_SSID
+		string "The SSID of the settings WAP"
+		default "ON-AIR-SIGN"
+		help
+			The SSID of the Wireless-Access-Point created by the ESP
+			for the initial setup
+
+	config SSID_MAX_LEN
+		int "maximun length of ssid string"
+		default 32
+
+	config AP_PASSWORD
+		string "The password of the settings WAP"
+		default "dAOxHZY6vD2cGuMtUjWMqXx3mnGZs6Nw"
+		help
+			The password of the Wireless-Access-Point created by the ESP
+			for the initial setup
+
+	config PASSWORD_MAX_LEN
+		int "maximun length of password string"
+		default 32
+
+	config DEFAULT_IP_ADDRESS
+		string "Default IP-Adress"
+		default "192.168.2.222"
+		help
+			The default static IP-Address of the sign	
+
+	config DEFAULT_NETMASK
+		string "Default Subnet Mask"
+		default "255.255.255.0"
+		help
+			The default subnet mask of static IP-Address of the sign
+
+	config DEFAULT_GATEWAY
+		string "Default Gateway Adress"
+		default "192.168.2.1"
+		help
+			The default gateway Address
+
+	config DEFAULT_PORT
+		string "Default Port"
+		default "64000"
+		help
+			Default communication port of the sign
+
+	config RECEIVE_TIMEOUT
+		int "Timeout interval for the socket receive function in seconds"
+		default 1
+		help
+			The receive timeout effectively controlls the frequency
+			with which the system will check if the 'SETUP'-button is pressed. 
+
+	config LED_DATA_PIN
+		int "Pin for red LED PWM"
+		default 23
+
+	config RESET_BUTTON_PIN
+		int "Pin for pull down reset button"
+		default 19
+
+	config ANIMATION_TICKS_PER_SECOND
+		int "number of animation frames/ticks per second"
+		default 30
+	
+endmenu

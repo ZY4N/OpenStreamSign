@@ -1,0 +1,26 @@
+*~
+.DS_Store
+/build/
+/build_*/
+/release/
+/installer/Output/
+
+/cmake/
+.ninja_log
+.ninja_deps
+build.ninja
+.vscode
+.idea
+.cmake
+/CMakeFiles/
+/rundir/
+.ninja_deps
+CMakeCache.txt
+Makefile
+obs-plugintemplate.cbp
+obs-plugintemplate.so
+
+
+# ignore generated files
+*.generated.*
+**/.Brewfile.lock.json
