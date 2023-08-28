@@ -3,6 +3,34 @@
 
 #include <algorithm>
 
+
+
+mbedtls_hmac_sha_512_engine::mbedtls_hmac_sha_512_engine(const mbedtls_hmac_sha_512_engine& other) {
+	init(other.key);
+}
+
+mbedtls_hmac_sha_512_engine::mbedtls_hmac_sha_512_engine(mbedtls_hmac_sha_512_engine&& other) {
+	ctx = other.ctx;
+	key = other.key;
+	std::swap(initialized, other.initialized);
+}
+
+mbedtls_hmac_sha_512_engine &mbedtls_hmac_sha_512_engine::operator=(const mbedtls_hmac_sha_512_engine& other) {
+	this->~mbedtls_hmac_sha_512_engine();
+	init(other.key);
+	return *this;
+}
+
+mbedtls_hmac_sha_512_engine &mbedtls_hmac_sha_512_engine::operator=(mbedtls_hmac_sha_512_engine&& other) {
+	if (&other != this) {
+		this->~mbedtls_hmac_sha_512_engine();
+		ctx = other.ctx;
+		key = other.key;
+		std::swap(initialized, other.initialized);
+	}
+	return *this;
+}
+
 std::error_code mbedtls_hmac_sha_512_engine::init(const std::span<const u8> newKey) {
 	using hmac_sha_512_engine_error::make_error_code;
 	using enum hmac_sha_512_engine_error::codes;
@@ -62,5 +90,8 @@ std::error_code mbedtls_hmac_sha_512_engine::hash(
 }
 
 mbedtls_hmac_sha_512_engine::~mbedtls_hmac_sha_512_engine() {
-	mbedtls_md_free(&ctx);
+	if (initialized) {
+		mbedtls_md_free(&ctx);
+		initialized = false;
+	}
 }

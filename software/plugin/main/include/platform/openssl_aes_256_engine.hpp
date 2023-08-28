@@ -30,5 +30,5 @@ public:
 
 private:
 	EVP_CIPHER_CTX* ctx{ nullptr };
-	std::array<u8, 32> key;
+	std::array<u8, 32> key{};
 };

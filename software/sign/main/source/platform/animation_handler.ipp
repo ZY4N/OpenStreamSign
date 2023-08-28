@@ -12,6 +12,8 @@
 #include <esp_timer.h>
 #include <util/variant_visit.hpp>
 
+#include "esp_log.h" // TODO remove logs
+
 template<class animations_t>
 void animation_handler<animations_t>::animation_task(void *arg) {
 
@@ -33,6 +35,7 @@ void animation_handler<animations_t>::animation_task(void *arg) {
 
 		// Setting the color at the beginning of the tick creates a delay of one tick
 		// but insures more accurate color change intervals.
+
 		leds();
 
 		if (hasNewAnimation.test()) {
@@ -70,7 +73,7 @@ void animation_handler<animations_t>::init(const animation_t& newAnimation) {
 	static std::once_flag initFlag;
 	std::call_once(initFlag, [&]() {
 		shared_state = new shared_animation_state(true, newAnimation);
-		xTaskCreate(animation_task, "animation", 4096, shared_state, 5, &animation_task_handle);
+		xTaskCreate(animation_task, "animation", 4096, shared_state, tskIDLE_PRIORITY + 1, &animation_task_handle);
 	});
 }
 
@@ -78,12 +81,11 @@ template<class animations_t>
 void animation_handler<animations_t>::setAnimation(const animation_t& newAnimation) {
 	shared_state->hasNewAnimation.wait(true);
 	shared_state->animation = newAnimation;
-	[[maybe_unused]] const auto wasSet = shared_state->hasNewAnimation.test_and_set();
-	assert(not wasSet);
+	shared_state->hasNewAnimation.test_and_set();
 }
 
 template<class animations_t>
 animation_handler<animations_t>::~animation_handler() {
-	vTaskDelete(animation_task_handle);
+	vTaskDelete(animation_task_handle); // TODO change this shit
 	delete shared_state;
 }

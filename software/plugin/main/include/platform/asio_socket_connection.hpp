@@ -14,7 +14,7 @@ public:
 
 	[[nodiscard]] std::error_code listen(uint16_t port);
 	
-	[[nodiscard]] std::error_code connect(const std::string& host, uint16_t port);
+	[[nodiscard]] std::error_code connect(const std::string_view& host, uint16_t port);
 	
 	[[nodiscard]] std::error_code send(std::span<const uint8_t> data);
 	
@@ -24,6 +24,8 @@ public:
 
 	[[nodiscard]] bool isConnected() const;
 
+	[[nodiscard]] std::error_code setReceiveTimeoutInterval(int seconds);
+
 	~asio_socket_connection();
 
 private:
@@ -31,3 +33,4 @@ private:
 	asio::io_service ctx;
 	tcp::socket socket;
 };
+// socket.set_option(boost::asio::detail::socket_option::integer<SOL_SOCKET, SO_RCVTIMEO>{ 200 });

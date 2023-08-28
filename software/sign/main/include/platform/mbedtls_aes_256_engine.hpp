@@ -25,6 +25,15 @@ class mbedtls_aes_256_engine {
 public:
 	mbedtls_aes_256_engine() = default;
 
+
+
+	mbedtls_aes_256_engine(const mbedtls_aes_256_engine& other);
+	mbedtls_aes_256_engine(mbedtls_aes_256_engine&& other);
+
+	mbedtls_aes_256_engine& operator=(const mbedtls_aes_256_engine& other);
+	mbedtls_aes_256_engine& operator=(mbedtls_aes_256_engine&& other);
+
+
 	/**
 	 * @brief Initializes the AES-256 context.
 	 * 
@@ -92,6 +101,6 @@ public:
 
 private:
 	mbedtls_aes_context ctx;
-	std::array<u8, aes_256_info::blockSize> key;
+	std::array<u8, 256 / 8> key;
 	bool initialized{ false };
 };

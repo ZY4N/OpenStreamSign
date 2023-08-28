@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include <iostream>
+
 
 #ifndef CONSTEXPR_FOR
 #define CONSTEXPR_FOR
@@ -570,7 +572,7 @@ namespace json::transcoding {
 				);
 			}
 
-			// assuming there are no linebreaks in a token
+			// assuming there are no linebreaks within a token
 			m_location.column += afterPos - beforePos;
 
 			if (not foundToken) {
@@ -628,19 +630,19 @@ namespace json::transcoding {
 
 	namespace detokenizer_formats {
 		constexpr detokenizer_format pretty_tab{
-			.m_space{" "},
-			.m_tab{"\t"},
-			.m_newline{"\n"},
+			.m_space{ " " },
+			.m_tab{ "\t" },
+			.m_newline{ "\n" },
 		};
 		constexpr detokenizer_format pretty_space{
-			.m_space{" "},
-			.m_tab{" "},
-			.m_newline{"\n"},
+			.m_space{ " " },
+			.m_tab{ " " },
+			.m_newline{ "\n" },
 		};
 		constexpr detokenizer_format minimal{
-			.m_space{""},
-			.m_tab{""},
-			.m_newline{""},
+			.m_space{ "" },
+			.m_tab{ "" },
+			.m_newline{ "" },
 		};
 	}
 
@@ -685,8 +687,10 @@ namespace json::transcoding {
 					break;
 				}
 				case outdent: {
-					const auto length =
-						static_cast<long long>(m_indent.length()) - static_cast<long long>(m_format.m_tab.size());
+					const auto length = (
+						static_cast<long long>(m_indent.length()) -
+						static_cast<long long>(m_format.m_tab.size())
+					);
 					m_indent.resize(std::max(0LL, length));
 					break;
 				}
@@ -1022,6 +1026,10 @@ class named_tuple {
 			return indexer.indexOf(name);
 		}
 
+		inline constexpr static auto nameOf(size_t index) {
+			return indexer.nameOf(index);
+		}
+
 		inline static constexpr size_t size() {
 			return sizeof...(Elements);
 		}
@@ -1068,8 +1076,7 @@ class named_tuple {
 			return *reinterpret_cast<const value_tuple_t*>(&elements);
 		}
 
-	private:
-		entry_tuple_t elements{};
+	entry_tuple_t elements{};
 };
 
 #endif
@@ -1149,6 +1156,10 @@ class named_variant {
 
 		inline constexpr static auto indexOf(std::span<const char> name) {
 			return indexer.indexOf(name);
+		}
+
+		inline constexpr static auto nameOf(size_t index) {
+			return indexer.nameOf(index);
 		}
 
 		[[nodiscard]] inline constexpr size_t index() const {
@@ -1388,7 +1399,7 @@ namespace json::safe {
 			using type = std::vector<element_type>;
 
 			[[nodiscard]] inline type operator()() const {
-				return { DefaultElements()... };
+				return { DefaultElement(), DefaultElements()... };
 			}
 		};
 
@@ -1842,9 +1853,11 @@ namespace json::safe {
 		using object_t = typename default_object_t::type;
 
 		const auto key = accept(STRING).get<STRING>();
+		// Lifetime of key ends with next accept so indexOf needs to be done here
+		const auto index_opt = object_t::indexOf(key);
+
 		accept(COLON);
 
-		const auto index_opt = object_t::indexOf(key);
 		if (index_opt and not isSet[*index_opt]) {
 			isSet[*index_opt] = true;
 			// inline a switch for the correct member default value

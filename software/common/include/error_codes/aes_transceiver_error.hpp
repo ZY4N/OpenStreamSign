@@ -31,10 +31,16 @@ namespace aes_transceiver_error {
 			}
 		}
 	};
+}
 
+inline aes_transceiver_error::category& aes_transceiver_category() {
+	static aes_transceiver_error::category cat;
+	return cat;
+}
+
+namespace aes_transceiver_error {
 	inline std::error_code make_error_code(codes e) {
-		static category cat;
-		return { static_cast<int>(e), cat };
+		return { static_cast<int>(e), aes_transceiver_category() };
 	}
 }
 

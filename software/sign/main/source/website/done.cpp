@@ -1,5 +1,7 @@
 #include <website/http_handlers.hpp>
 
+#include <domain_logic/sign.hpp>
+
 using doneForm = html::form<>;
 
 esp_err_t done_get_handler(httpd_req_t *req) {
@@ -13,4 +15,14 @@ esp_err_t done_get_handler(httpd_req_t *req) {
 
 	return ESP_OK;
 }
- 
+
+esp_err_t done_post_handler(httpd_req_t *req) {
+	ESP_LOGI("DONE_POST", "Setup done");
+
+	httpd_resp_send_200(req);
+
+	// stop setup task
+	sign.switch_task.test_and_set();
+
+	return ESP_OK;
+}

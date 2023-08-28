@@ -1,11 +1,9 @@
 #include <hmac_sha_512_handshake.hpp>
 #include <error_codes/hmac_sha_512_handshake_error.hpp>
 
-
-hmac_sha_512_handshake::hmac_sha_512_handshake(hmac_sha_512_engine &n_engine, socket_connection &n_connection)
-	: m_engine{ n_engine }, m_connection{ n_connection } {}
-
-std::error_code hmac_sha_512_handshake::challengePeer() {
+std::error_code hmac_sha_512_handshake::detail::challengePeer(
+	hmac_sha_512_engine &engine, socket_connection &connection
+) {
 	using hmac_sha_512_handshake_error::make_error_code;
 	using enum hmac_sha_512_handshake_error::codes;
 
@@ -14,18 +12,18 @@ std::error_code hmac_sha_512_handshake::challengePeer() {
 
 	std::error_code e;
 
-	if ((e = m_engine.hash(challenge, hash)))
+	if ((e = engine.hash(challenge, hash)))
 		return e;
 
-	if ((e = m_connection.send(challenge)))
+	if ((e = connection.send(challenge)))
 		return e;
 
-	if ((e = m_connection.receive(answer)))
+	if ((e = connection.receive(answer)))
 		return e;
 
 	const std::array<uint8_t, 1> correct{hash == answer};
 
-	if ((e = m_connection.send(correct)))
+	if ((e = connection.send(correct)))
 		return e;
 
 	if (correct[0]) {
@@ -36,7 +34,9 @@ std::error_code hmac_sha_512_handshake::challengePeer() {
 }
 
 
-std::error_code hmac_sha_512_handshake::solveChallenge() {
+std::error_code hmac_sha_512_handshake::detail::solveChallenge(
+	hmac_sha_512_engine &engine, socket_connection &connection
+) {
 	using hmac_sha_512_handshake_error::make_error_code;
 	using enum hmac_sha_512_handshake_error::codes;
 
@@ -44,18 +44,18 @@ std::error_code hmac_sha_512_handshake::solveChallenge() {
 
 	std::error_code e;
 
-	if ((e = m_connection.receive(challenge)))
+	if ((e = connection.receive(challenge)))
 		return e;
 
-	if ((e = m_engine.hash(challenge, hash)))
+	if ((e = engine.hash(challenge, hash)))
 		return e;
 
-	if ((e = m_connection.send(hash)))
+	if ((e = connection.send(hash)))
 		return e;
 
 	std::array<uint8_t, 1> correct;
 
-	if ((e = m_connection.receive(correct)))
+	if ((e = connection.receive(correct)))
 		return e;
 
 	if (correct[0]) {
@@ -66,15 +66,18 @@ std::error_code hmac_sha_512_handshake::solveChallenge() {
 }
 
 
-[[nodiscard]] std::error_code hmac_sha_512_handshake::validate(const bool initiator) {
+[[nodiscard]] std::error_code hmac_sha_512_handshake::validate(
+	hmac_sha_512_engine &engine, socket_connection &connection,
+	const bool initiator
+) {
 	const auto executeActions = [&](auto&&... actions) {
 		std::error_code error;
-		((error = actions(), not error) and ...);
+		((error = actions(engine, connection), not error) and ...);
 		return error;
 	};
 	auto actions = std::pair{
-		[this]() { return challengePeer(); },
-		[this]() { return solveChallenge(); }
+		&detail::challengePeer,
+		&detail::solveChallenge
 	};
 	return (initiator ?
 		executeActions(actions.first, actions.second) :

@@ -25,10 +25,16 @@ namespace hmac_sha_512_handshake_error {
 			}
 		}
 	};
+}
 
+inline hmac_sha_512_handshake_error::category& hmac_sha_512_handshake_category() {
+	static hmac_sha_512_handshake_error::category cat;
+	return cat;
+}
+
+namespace hmac_sha_512_handshake_error {
 	inline std::error_code make_error_code(codes e) {
-		static category cat;
-		return { static_cast<int>(e), cat };
+		return { static_cast<int>(e), hmac_sha_512_handshake_category() };
 	}
 }
 

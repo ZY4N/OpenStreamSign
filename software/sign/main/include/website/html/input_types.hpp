@@ -41,6 +41,18 @@ namespace input_types {
 		}
 	};
 
+	struct button {
+		static constexpr auto maxBytes = 0;
+		using value_t = bool;
+		static constexpr auto getAttributes() {
+			using namespace ztu::string_literals;
+			return "type=button data-t=ign"_sl;
+		}
+		static constexpr void parseValue(const char *begin, const char *end, bool &dst) {
+			dst = false;
+		}
+	};
+
 	struct ipv4 {
 		static constexpr auto maxBytes = 4;
 		using value_t = uint32_t;

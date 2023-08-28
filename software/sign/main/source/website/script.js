@@ -38,10 +38,23 @@ window.addEventListener('load', () => {
 	const encoders = {
 		txt: encodeString,
 		ipv4: encodeIPv4,
-		u16: encodeUnsignedShort
+		u16: encodeUnsignedShort,
+		ign: (src, dst) => true
 	};
 
 	for (const form of document.forms) {
+
+		const secretField = form.elements.namedItem('secret');
+		const copyButton = form.elements.namedItem('copy');
+		if (secretField && copyButton) {
+			copyButton.addEventListener('click', () => {
+				secretField.select();
+				secretField.setSelectionRange(0, 99999);
+				navigator.clipboard.writeText(secretField.value);
+				alert("Copied secret to clipboard!");
+			});
+		}
+
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
 			let buffer = [];

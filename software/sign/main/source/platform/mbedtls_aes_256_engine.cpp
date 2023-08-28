@@ -3,6 +3,35 @@
 
 #include <algorithm>
 
+#include <esp_log.h>
+
+
+mbedtls_aes_256_engine::mbedtls_aes_256_engine(const mbedtls_aes_256_engine& other) {
+	init(other.key);
+}
+
+mbedtls_aes_256_engine::mbedtls_aes_256_engine(mbedtls_aes_256_engine&& other) {
+	ctx = other.ctx;
+	key = other.key;
+	std::swap(initialized, other.initialized);
+}
+
+mbedtls_aes_256_engine &mbedtls_aes_256_engine::operator=(const mbedtls_aes_256_engine& other) {
+	this->~mbedtls_aes_256_engine();
+	init(other.key);
+	return *this;
+}
+
+mbedtls_aes_256_engine &mbedtls_aes_256_engine::operator=(mbedtls_aes_256_engine&& other) {
+	if (&other != this) {
+		this->~mbedtls_aes_256_engine();
+		ctx = other.ctx;
+		key = other.key;
+		std::swap(initialized, other.initialized);
+	}
+	return *this;
+}
+
 std::error_code mbedtls_aes_256_engine::init(std::span<const u8> newKey) {
 	using aes_256_engine_error::make_error_code;
 	using enum aes_256_engine_error::codes;
@@ -107,8 +136,9 @@ std::error_code mbedtls_aes_256_engine::init(std::span<const u8> newKey) {
 		plainText.data()
 	);
 
-	const auto pkc7PaddingSize = plainText[plainText.size() - 1];
-	if (pkc7PaddingSize > aes_256_info::blockSize) {
+	const auto pkc7PaddingSize = plainText[cipherText.size() - 1];
+
+	if (pkc7PaddingSize == 0 or pkc7PaddingSize > aes_256_info::blockSize) {
 		return make_error_code(CORRUPT_PKC7_PADDING);
 	}
 
@@ -118,5 +148,7 @@ std::error_code mbedtls_aes_256_engine::init(std::span<const u8> newKey) {
 }
 
 mbedtls_aes_256_engine::~mbedtls_aes_256_engine() {
-	mbedtls_aes_free(&ctx);
+	if (initialized) {
+		mbedtls_aes_free(&ctx);
+	}
 }

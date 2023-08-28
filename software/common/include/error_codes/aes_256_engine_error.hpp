@@ -43,10 +43,16 @@ namespace aes_256_engine_error {
 			}
 		}
 	};
+}
 
+inline aes_256_engine_error::category&	aes_256_engine_category() {
+	static aes_256_engine_error::category cat;
+	return cat;
+}
+
+namespace aes_256_engine_error {
 	inline std::error_code make_error_code(codes e) {
-		static category cat;
-		return { static_cast<int>(e), cat };
+		return { static_cast<int>(e), aes_256_engine_category() };
 	}
 }
 

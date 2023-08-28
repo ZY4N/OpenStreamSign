@@ -25,6 +25,11 @@ class lwip_socket_connection {
 public:
 	lwip_socket_connection() = default;
 
+	lwip_socket_connection(const lwip_socket_connection&) = delete;
+	lwip_socket_connection& operator=(const lwip_socket_connection&) = delete;
+
+	lwip_socket_connection(lwip_socket_connection&& other);
+	lwip_socket_connection& operator=(lwip_socket_connection&& other);
 
 	/**
 	 * @brief Sends data over a connected socket.
@@ -35,7 +40,7 @@ public:
 	 * the error code will have a value of 0. Otherwise, the error code will contain a non-zero value indicating the
 	 * error that occurred. The error code is accompanied by a system category to provide more context about the error.
 	 */
-	[[nodiscard]] std::error_code send(std::span<const u8> data);
+	[[nodiscard]] std::error_code send(std::span<const u8>& data);
 
 
 	/**
@@ -47,7 +52,7 @@ public:
 	 * the error code will have a value of 0. Otherwise, the error code will contain a non-zero value indicating the
 	 * error that occurred. The error code is accompanied by a system category to provide more context about the error.
 	 */
-	[[nodiscard]] std::error_code receive(std::span<u8> data);
+	[[nodiscard]] std::error_code receive(std::span<u8>& data);
 
 
 	/**
@@ -60,15 +65,16 @@ public:
     */
 	void disconnect();
 
-	[[nodiscard]] std::error_code setReceiveTimeoutInterval(const time_t seconds, const suseconds_t microseonds);
-
 
 	lwip_safe_fd &socket();
 
+	[[nodiscard]] std::error_code set_send_timeout(u32 milliseconds);
+
+	[[nodiscard]] std::error_code set_receive_timeout(u32 milliseconds);
 
 	~lwip_socket_connection();
 	
 
 private:
-	lwip_safe_fd m_socket{ -1 };
+	lwip_safe_fd m_socket{};
 };

@@ -119,7 +119,6 @@ namespace json_sign_animation_detail {
 		constexpr json_sign_basic_animation() : variant_sign_basic_animation_adapter<decltype(DefaultVariant)>{ DefaultVariant }{}
 	};
 
-
 	template<json_default_object DefaultObject_t>
 	struct object_sign_animation_converter {
 		using x_t = DefaultObject_t::type;

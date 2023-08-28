@@ -24,6 +24,13 @@ public:
 	mbedtls_hmac_sha_512_engine() = default;
 
 
+	mbedtls_hmac_sha_512_engine(const mbedtls_hmac_sha_512_engine& other);
+	mbedtls_hmac_sha_512_engine(mbedtls_hmac_sha_512_engine&& other);
+
+	mbedtls_hmac_sha_512_engine& operator=(const mbedtls_hmac_sha_512_engine& other);
+	mbedtls_hmac_sha_512_engine& operator=(mbedtls_hmac_sha_512_engine&& other);
+
+
 	/**
 	 * @brief Initializes the HMAC-SHA512 context.
 	 * 
@@ -60,5 +67,5 @@ public:
 private:
 	mbedtls_md_context_t ctx;
 	std::array<u8, 64> key;
-	bool initialized{ false }; // necessary as access to ctx are private
+	bool initialized{ false }; // necessary as access to ctx is private
 };

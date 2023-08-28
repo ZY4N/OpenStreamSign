@@ -9,25 +9,24 @@
 namespace aes_transceiver_concepts {
 
 	template<class T>
-	concept message_header = (
+	concept message_meta = (
 		std::is_default_constructible_v<T> and
 		requires(const T t) {
-			{ t.bodySize() } -> std::same_as<unsigned short>;
+			{ t.body_size() } -> std::same_as<unsigned short>;
 		}
 	);
 
 	template<class T>
 	concept message = (
-		message_header<typename T::header_t> and
+		message_meta<typename T::meta_t> and
 		std::is_enum_v<decltype(T::type)> and
 		std::integral<decltype(T::max_body_size)> and
-		// static bool T::serialize(header_t& header, std::span<u8>, const Args&... args) and
 		requires(typename T::data_t data) {
 			{
 				std::apply([]<typename... Args>(Args&&... args) {
-					typename T::header_t header;
+					typename T::meta_t meta;
 					std::span<const u8> buffer;
-					return T::deserialize(header, buffer, std::forward<Args>(args)...);
+					return T::deserialize(meta, buffer, std::forward<Args>(args)...);
 				}, data)
 			} -> std::same_as<bool>;
 		}

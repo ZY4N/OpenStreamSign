@@ -91,7 +91,27 @@
 			"cerrno": "cpp",
 			"cassert": "cpp",
 			"format": "cpp",
-			"stdfloat": "cpp"
+			"stdfloat": "cpp",
+			"locale": "cpp",
+			"__bit_reference": "cpp",
+			"__bits": "cpp",
+			"__config": "cpp",
+			"__debug": "cpp",
+			"__hash_table": "cpp",
+			"__mutex_base": "cpp",
+			"__node_handle": "cpp",
+			"__split_buffer": "cpp",
+			"__threading_support": "cpp",
+			"__tuple": "cpp",
+			"__verbose_abort": "cpp",
+			"__tree": "cpp",
+			"queue": "cpp",
+			"ios": "cpp",
+			"__locale": "cpp",
+			"__memory": "cpp",
+			"__errc": "cpp",
+			"__std_stream": "cpp",
+			"__hash": "cpp"
 		}
 	}
 }

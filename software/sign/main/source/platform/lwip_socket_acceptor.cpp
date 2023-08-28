@@ -63,11 +63,31 @@ std::error_code lwip_socket_acceptor::initialize(const uint16_t port) {
 	return make_system_error(0);
 }
 
-std::error_code lwip_socket_acceptor::listen(lwip_socket_connection &connection) {
+std::error_code lwip_socket_acceptor::listen(
+	lwip_socket_connection &connection,
+	uint32_t timeout_ms
+ ) {
 
-	struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
+	struct sockaddr_storage source_addr;
 	socklen_t addr_len = sizeof(source_addr);
 
+	
+	if (timeout_ms) {
+		timeval timeout_interval {
+			.tv_sec = timeout_ms / 1000,
+			.tv_usec = static_cast<suseconds_t>((timeout_ms % 1000) * 1000)
+		};
+
+		fd_set read_fds;
+		FD_ZERO(&read_fds);
+		FD_SET(m_socket.fd, &read_fds);
+
+		const auto ret = select(m_socket.fd + 1, &read_fds, nullptr, nullptr, &timeout_interval);
+		if (ret <  0) return make_system_error(errno);
+		if (ret == 0) return make_system_error(EAGAIN);
+	}
+
+	
 	lwip_safe_fd conn{ accept(m_socket.fd, (struct sockaddr *)&source_addr, &addr_len) };
 	if (conn.fd < 0) {
 		return std::error_code(errno, std::system_category());

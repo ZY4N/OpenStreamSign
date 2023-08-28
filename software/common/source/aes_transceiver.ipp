@@ -8,93 +8,132 @@
 
 template<typename Enum, aes_transceiver_concepts::message... Messages>
 	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
-std::error_code aes_transceiver<Enum, Messages...>::send(const message_t& value) {
-	const auto index = value.index();
-	std::error_code error;
-	messages::indexed_for_each_f([&]<auto Index, class Message>() {
-		if (index == Index) {
-			error = send<Message::type>(std::get<Index>(value));
-			return true;
-		}
-		return false;
-	});
-	return error;
-}
-
-
-template<typename Enum, aes_transceiver_concepts::message... Messages>
-	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
 template<Enum Type, typename... Args>
-	requires (index_of_message<Type, Messages...> < sizeof...(Messages))
-[[nodiscard]] std::error_code aes_transceiver<Enum, Messages...>::send(const Args&... args) {
-
+		requires (index_of_message<Type, Messages...> < sizeof...(Messages))
+std::error_code aes_transceiver<Enum, Messages...>::encrypt_message(
+	std::span<u8> &packet, const Args&... args
+) {
 	using enum aes_transceiver_error::codes;
 	using namespace aes_transceiver_error;
 
 	constexpr auto index = index_of_message<Type, Messages...>;
 	using message = messages::template at<index>;
-	using header_t = message::header_t;
+	using meta_t = message::meta_t;
 
-	auto typeBuffer = std::span{ m_buffer.begin(), sizeof(type_integral_t) };
-	auto headerBuffer = std::span{ typeBuffer.end(), sizeof(header_t) };
-	auto bodyBuffer = std::span{ headerBuffer.end(), message::max_body_size };
+	const auto text_buffer_view = std::span<u8>{ m_text_buffer };
+	const auto packet_buffer_view = std::span<u8>{ m_packet_buffer };
 
-	constexpr auto typeIndex = static_cast<type_integral_t>(index);
-	const auto &typeBytes = *reinterpret_cast<const std::array<u8, sizeof(type_integral_t)>*>(&typeIndex);
-	std::copy(typeBytes.begin(), typeBytes.end(), typeBuffer.begin());
+	usize header_size = 0;
+	auto type_buffer	= text_buffer_view.subspan(header_size, sizeof(type_integral_t));
+	header_size		  += type_buffer.size();
+	auto meta_buffer	= text_buffer_view.subspan(header_size, sizeof(meta_t));
+	header_size		  += meta_buffer.size();
 
-	auto &header = *reinterpret_cast<header_t*>(headerBuffer.data());
+	auto padded_header_size	= aes_256_info::cipherLength(header_size); // leave space for pkcs7
+	auto padded_body_buffer = text_buffer_view.subspan(padded_header_size, message::max_body_size);
 
-	if (not message::serialize(header, bodyBuffer, std::forward<const Args>(args)...))
+	meta_t meta;
+
+	if (not message::serialize(meta, padded_body_buffer, std::forward<const Args>(args)...))
 		return make_error_code(SERIALIZATION_ERROR);
 
+	constexpr auto type_index = static_cast<type_integral_t>(index);
+	std::copy_n(reinterpret_cast<const u8*>(&type_index), sizeof(type_integral_t), type_buffer.begin());
+	std::copy_n(reinterpret_cast<const u8*>(&meta      ), sizeof(meta_t         ), meta_buffer.begin());
+
 	std::error_code error;
-	if ((error = aes_send({ typeBuffer.begin(), headerBuffer.end() })))
+	const auto padded_header_buffer = text_buffer_view.subspan(0, padded_header_size);
+	auto header_packet = packet_buffer_view;
+	if ((error = encrypt(padded_header_buffer, header_size, header_packet)))
 		return error;
 
-	if ((error = aes_send({ bodyBuffer.begin(), header.bodySize() })))
+	const auto body_size = meta.body_size();
+	auto body_packet = packet_buffer_view.subspan(header_packet.size());
+	if ((error = encrypt(padded_body_buffer, body_size, body_packet)))
 		return error;
 
-	return OK;
+	packet = { header_packet.begin(), body_packet.end() };
+	
+	return make_error_code(OK);
 }
 
 template<typename Enum, aes_transceiver_concepts::message... Messages>
 	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
-std::error_code aes_transceiver<Enum, Messages...>::receive(message_t &value) {
+std::span<u8> aes_transceiver<Enum, Messages...>::header_packet_buffer() {
+	return { m_packet_buffer.begin(), max_header_packet_size };
+}
+
+template<typename Enum, aes_transceiver_concepts::message... Messages>
+	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
+std::error_code aes_transceiver<Enum, Messages...>::decrypt_header(
+	header_t &header, std::span<u8> &body_packet_buffer
+) {
 	using enum aes_transceiver_error::codes;
+	using namespace aes_transceiver_error;
 
-	const auto typeBuffer = std::span{ m_buffer.begin(), sizeof(type_integral_t) };
-	const auto headerBuffer = std::span{ typeBuffer.end(), maxHeaderSize };
-
+	auto header_buffer = std::span<u8>{ m_text_buffer };
+	
 	std::error_code error;
-	if ((error = aes_receive({ typeBuffer.begin(), headerBuffer.end() })))
+	if ((error = decrypt(header_packet_buffer(), header_buffer)))
 		return error;
 
-	const auto index = *reinterpret_cast<const type_integral_t*>(typeBuffer.data());
+	const auto type_index = *reinterpret_cast<const type_integral_t*>(header_buffer.data());
 
 	error = INVALID_MESSAGE_TYPE;
 
+	messages::indexed_for_each([&]<auto Index, typename Message>() {
+		if (Index == type_index) {
+			
+			using meta_t = Message::meta_t;
+			const auto meta = *reinterpret_cast<const meta_t*>(header_buffer.data() + sizeof(type_index));
+			const auto body_size = meta.body_size();
+			const auto body_packet_size = aes_256_info::ivSize + aes_256_info::cipherLength(body_size);
+
+			if (body_packet_size > max_body_packet_size) {
+				error = INVALID_MESSAGE_SIZE;
+			} else {
+				error = OK;
+				header.template emplace<Index>(meta);
+				body_packet_buffer = { m_packet_buffer.begin(), body_packet_size };
+			}
+
+			return true;
+		}
+		return false;
+	});
+
+	return error;
+}
+
+template<typename Enum, aes_transceiver_concepts::message... Messages>
+	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
+std::error_code aes_transceiver<Enum, Messages...>::decrypt_body(
+	const header_t &header, message_t& message
+) {
+	using enum aes_transceiver_error::codes;
+	using namespace aes_transceiver_error;
+	
+	const auto type_index = header.index();
+
+	std::error_code error = INVALID_MESSAGE_TYPE;
+
 	messages::indexed_for_each(
 		[&]<auto Index, typename Message>() {
-			if (Index == index) {
+			if (Index == type_index) {
 
-				const auto header = *reinterpret_cast<const typename Message::header_t*>(headerBuffer.data());
-		
-				const auto bodySize = header.bodySize();
-				const auto spaceLeft = &(*m_buffer.end()) - &(*headerBuffer.end());
-				if (bodySize > spaceLeft) {
-					error = INVALID_MESSAGE_SIZE;
+				const auto& meta = *std::get_if<Index>(&header);
+
+				const auto body_size = meta.body_size();
+				const auto body_packet_size = aes_256_info::ivSize + aes_256_info::cipherLength(body_size);
+				const auto body_packet_buffer = std::span<u8>{ m_packet_buffer.begin(), body_packet_size };
+
+				auto body_buffer = std::span<u8>{ m_text_buffer };
+				if ((error = decrypt(body_packet_buffer, body_buffer)))
 					return true;
-				}
-
-				const auto bodyBuffer = std::span{ headerBuffer.end(), bodySize };
-				if ((error = aes_receive(bodyBuffer))) {
-					return true;
-				}
-
-				auto &data = value.template emplace<Index>();
+			
+				auto &data = message.template emplace<Index>();
 				const auto ok = std::apply([&](auto&... args) {
-					return Message::deserialize(header, bodyBuffer, args...);
+					return Message::deserialize(meta, body_buffer, args...);
 				}, data);
 
 				error = ok ? OK : DESERIALIZATION_ERROR;
@@ -108,53 +147,52 @@ std::error_code aes_transceiver<Enum, Messages...>::receive(message_t &value) {
 	return error;
 }
 
+
 template<typename Enum, aes_transceiver_concepts::message... Messages>
 	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
-std::error_code aes_transceiver<Enum, Messages...>::aes_send(std::span<u8> data) {
+std::error_code aes_transceiver<Enum, Messages...>::encrypt(std::span<u8> text_buffer, usize text_size, std::span<u8> &packet) {
 	using enum aes_transceiver_error::codes;
 
-	const auto cipherLength = aes_256_info::cipherLength(data.size());
+	const auto cipher_size = aes_256_info::cipherLength(text_size);
 
-	// plaintextBuffer is needed because pck7 padding is added in place
-	// into the plaintext before encrypting to the body.
-	const auto plainTextBuffer = std::span{ data.begin(), cipherLength };
-	const auto iv = std::span{ m_aes_buffer.begin(), aes_256_info::ivSize };
-	const auto body = std::span{ iv.end(), cipherLength };
-	const auto packet = std::span{ iv.begin(), body.end() };
+	// Shrink text buffer to required size
+	text_buffer = text_buffer.subspan(0, cipher_size);
+
+	const auto packet_buffer_view = std::span<u8>{ m_packet_buffer };
+
+	auto offset		= packet.data() - packet_buffer_view.data();
+	const auto iv	= packet_buffer_view.subspan(offset, aes_256_info::ivSize);
+	offset		  += iv.size();
+	auto cipher		= packet_buffer_view.subspan(offset, cipher_size);
 
 	fill_random(iv);
 
-	std::error_code error; usize actualCipherLength;
-	if ((error = m_engine.encrypt(iv, plainTextBuffer, data.size(), body, actualCipherLength)))
+	std::error_code error; usize actual_cipherLength;
+	if ((error = m_engine->encrypt(iv, text_buffer, text_size, cipher, actual_cipherLength)))
 		return error;
+		
+	assert(cipher.size() == actual_cipherLength);
 
-	// assert(cipherLength == actualCipherLength);
-
-	if ((error = m_connection.send(packet)))
-		return error;
+	packet = { iv.begin(), cipher.end() };
 
 	return OK;
 }
 
 template<typename Enum, aes_transceiver_concepts::message... Messages>
 	requires (aes_transceiver_concepts::messages_valid<Enum, Messages...>::value)
-std::error_code aes_transceiver<Enum, Messages...>::aes_receive(std::span<u8> data) {
+std::error_code aes_transceiver<Enum, Messages...>::decrypt(std::span<u8> packet, std::span<u8> &text_buffer) {
 	using enum aes_transceiver_error::codes;
 
-	const auto cipherLength = aes_256_info::cipherLength(data.size());
+	const auto iv		= std::span<u8>{ packet.begin(), aes_256_info::ivSize };
+	const auto cipher	= std::span<u8>{ iv.end(), packet.end() };
 
-	const auto plainTextBuffer = std::span{ data.begin(), cipherLength };
-	const auto iv = std::span{ m_aes_buffer.begin(), aes_256_info::ivSize };
-	const auto body = std::span{ iv.end(), cipherLength };
-	const auto packet = std::span{ iv.begin(), body.end() };
-
-	std::error_code error;
-	if ((error = m_connection.receive(packet)))
+	std::error_code error; usize text_size;
+	if ((error = m_engine->decrypt(iv, cipher, text_buffer, text_size)))
 		return error;
 
-	usize plainTextSize;
-	if ((error = m_engine.decrypt(iv, body, plainTextBuffer, plainTextSize)))
-		return error;
-
+	assert(aes_256_info::cipherLength(text_size) == cipher.size());
+	
+	text_buffer = text_buffer.subspan(0, text_size);
+	
 	return OK;
 }

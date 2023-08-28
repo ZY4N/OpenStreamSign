@@ -50,10 +50,19 @@ namespace detail {
 		using alternatives = ztu::pack<Alternatives...>;
 
 	public:
+		enum_variant() = default;
+
 		Enum type() const {
-			return static_cast<Enum>(static_cast<enum_int_t>(
-				this->index()
-			));
+			const auto currentIndex = this->index();
+			Enum currentType{};
+			alternatives::template indexed_for_each([&]<auto Index, typename Alternative>() {
+				if (currentIndex == Index) {
+					currentType = Alternative::enum_v;
+					return true;
+				}
+				return false;
+			});
+			return currentType;
 		}
 
 		template<Enum Type>
@@ -81,16 +90,27 @@ template<typename Enum, aes_transceiver_concepts::message... Messages>
 struct aes_transceiver {
 private:
 
-	static constexpr auto maxHeaderSize		= std::max({ sizeof(typename Messages::header_t)... });
-	static constexpr auto maxBodySize		= std::max({ Messages::max_body_size... });
-	static constexpr auto maxMessageSize		= aes_256_info::cipherLength(maxHeaderSize) + aes_256_info::cipherLength(maxBodySize);
-	static constexpr auto maxPacketSize		= aes_256_info::ivSize + maxMessageSize;
+	using type_integral_t = ztu::uint_holding<sizeof...(Messages)>;
+
+	static constexpr auto max_meta_size				= std::max({ sizeof(typename Messages::meta_t)... });
+	static constexpr auto max_header_size			= sizeof(type_integral_t) + max_meta_size;
+	static constexpr auto max_body_size				= std::max({ Messages::max_body_size... });
+	static constexpr auto max_header_packet_size	= aes_256_info::ivSize + aes_256_info::cipherLength(max_header_size);
+	static constexpr auto max_body_packet_size		= aes_256_info::ivSize + aes_256_info::cipherLength(max_header_size);
+	static constexpr auto text_buffer_size			= max_header_size + max_body_size;
+	static constexpr auto packet_buffer_size		= max_header_packet_size + max_body_packet_size;
 
 	using messages = ztu::pack<Messages...>;
 
-	using type_integral_t = ztu::uint_holding<sizeof...(Messages)>;
-
 public:
+	using header_t = detail::enum_variant<
+	    Enum,
+	    detail::enum_type<
+			Messages::type,
+			typename Messages::meta_t
+		>...
+	>;
+
 	using message_t = detail::enum_variant<
 	    Enum,
 	    detail::enum_type<
@@ -99,28 +119,36 @@ public:
 		>...
 	>;
 
-	aes_transceiver(aes_256_engine &n_engine, socket_connection &n_connection)
-		: m_engine{ n_engine }, m_connection{ n_connection } {}
+	aes_transceiver() = default;
 
-	[[nodiscard]] std::error_code send(const message_t& value);
+	[[nodiscard]] aes_256_engine*& engine() { return m_engine; }
+
+	[[nodiscard]] std::error_code encrypt_message(std::span<u8> &packet, const message_t& message);
 
 	template<Enum Type, typename... Args>
 		requires (index_of_message<Type, Messages...> < sizeof...(Messages))
-	[[nodiscard]] std::error_code send(const Args&... args);
+	[[nodiscard]] std::error_code encrypt_message(std::span<u8> &packet, const Args&... args);
 
-	[[nodiscard]] std::error_code receive(message_t &value);
+	std::span<u8> header_packet_buffer();
+
+	[[nodiscard]] std::error_code decrypt_header(
+		header_t &header, std::span<u8> &body_packet_buffer
+	);
+
+	[[nodiscard]] std::error_code decrypt_body(
+		const header_t &header, message_t& message
+	);
 
 private:
-	[[nodiscard]] std::error_code aes_send(std::span<u8> data);
+	[[nodiscard]] std::error_code encrypt(std::span<u8> text_buffer, usize text_size, std::span<u8> &packet);
 
-	[[nodiscard]] std::error_code aes_receive(std::span<u8> data);
+	[[nodiscard]] std::error_code decrypt(std::span<u8> packet, std::span<u8> &text_buffer);
 
 private:
-	std::array<u8, maxMessageSize> m_buffer{};
-	std::array<u8, maxPacketSize> m_aes_buffer{};
+	std::array<u8, text_buffer_size> m_text_buffer{};
+	std::array<u8, packet_buffer_size> m_packet_buffer{};
 
-	aes_256_engine &m_engine;
-	socket_connection &m_connection;
+	aes_256_engine* m_engine{ nullptr };
 };
 
 

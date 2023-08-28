@@ -40,9 +40,12 @@ public:
 	 *
 	 * @return std::error_code indicating the result of the operation. Zero on success, non-zero on error.
 	 */
-	[[nodiscard]] std::error_code listen(lwip_socket_connection &connection);
+	[[nodiscard]] std::error_code listen(
+		lwip_socket_connection &connection,
+		uint32_t timeout_ms = 0
+	);
 
 
 private:
-	lwip_safe_fd m_socket{ -1 };
+	lwip_safe_fd m_socket{};
 };

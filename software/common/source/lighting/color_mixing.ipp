@@ -22,7 +22,7 @@ namespace color_mixing {
 			constexpr auto scale = (float(height) / float(offsetY) - 1.0f) / slopeWidth4;
 			constexpr auto correctedHeight = float(height + offsetY);
 
-			const auto offset = std::max(std::abs(x - offsetX) - halfFlatSpot, 0.0f);
+			const auto offset = std::max(std::abs(x - offsetX) * 2.0f - halfFlatSpot, 0.0f);
 			const auto offsetX4 = offset * offset * offset * offset; 
 			return correctedHeight / (1.0f + scale * offsetX4) - offsetY;
 		}

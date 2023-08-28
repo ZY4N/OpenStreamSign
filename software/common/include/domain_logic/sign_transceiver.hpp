@@ -23,20 +23,20 @@ namespace sign_messages {
 
 		using data_t = std::tuple<sign_state>;
 
-		struct header_t {
+		struct meta_t {
 			sign_state state;
-			[[nodiscard]] inline u16 bodySize() const {
+			[[nodiscard]] inline u16 body_size() const {
 				return 0;
 			}
 		};
 
-		inline static bool serialize(header_t& header, std::span<u8>, const sign_state &state) {
-			header.state = state;
+		inline static bool serialize(meta_t& meta, std::span<u8>, const sign_state &state) {
+			meta.state = state;
 			return true;
 		}
 
-		inline static bool deserialize(const header_t& header, std::span<const u8>, sign_state &state) {
-			state = header.state;
+		inline static bool deserialize(const meta_t& meta, std::span<const u8>, sign_state &state) {
+			state = meta.state;
 			return true;
 		}
 	};
@@ -51,16 +51,16 @@ namespace sign_messages {
 
 		using data_t = std::tuple<sign_state, sign_animation>;
 
-		struct header_t {
+		struct meta_t {
 			u16 animationLength;
 			sign_state state;
-			[[nodiscard]] inline u16 bodySize() const {
+			[[nodiscard]] inline u16 body_size() const {
 				return animationLength;
 			}
 		};
 
 		inline static bool serialize(
-			header_t& header,
+			meta_t& meta,
 			std::span<u8> body,
 			const sign_state &state,
 			const sign_animation &animation
@@ -73,19 +73,19 @@ namespace sign_messages {
 			if (it > body.end())
 				return false;
 
-			header.animationLength = it - 1 - body.begin();
-			header.state = state;
+			meta.animationLength = it - 1 - body.begin();
+			meta.state = state;
 
 			return true;
 		}
 
 		inline static bool deserialize(
-			const header_t& header,
+			const meta_t& meta,
 			std::span<const u8> body,
 			sign_state &state,
 			sign_animation &animation
 		) {
-			state = header.state;
+			state = meta.state;
 			auto it = body.begin();
 			return sign_animation_transcoding::deserialize(animation, it);
 		}
@@ -98,17 +98,17 @@ namespace sign_messages {
 
 		using data_t = std::tuple<>;
 
-		struct header_t {
-			[[nodiscard]] inline u16 bodySize() const {
+		struct meta_t {
+			[[nodiscard]] inline u16 body_size() const {
 				return 0;
 			}
 		};
 
-		inline static bool serialize(header_t&, std::span<u8>) {
+		inline static bool serialize(meta_t&, std::span<u8>) {
 			return true;
 		}
 
-		inline static bool deserialize(const header_t&, std::span<const u8>) {
+		inline static bool deserialize(const meta_t&, std::span<const u8>) {
 			return true;
 		}
 	};
@@ -121,4 +121,5 @@ using sign_transceiver = aes_transceiver<
 	sign_messages::heartbeat_message
 >;
 
+using sign_header = sign_transceiver::header_t;
 using sign_message = sign_transceiver::message_t;

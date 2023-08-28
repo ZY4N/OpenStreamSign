@@ -26,8 +26,8 @@ private:
 		animation_t animation;
 	};
 
-	shared_animation_state *shared_state;
-	TaskHandle_t animation_task_handle;
+	shared_animation_state *shared_state{ nullptr };
+	TaskHandle_t animation_task_handle{ nullptr };
 };
 
 #define INCLUDE_ANIMATION_HANDLER_IMPLEMENTATION

@@ -52,8 +52,15 @@ namespace html {
 	constexpr auto form<Fields...>::createField(const string_literal<N> &value) {
 		using namespace ztu::string_literals;
 
-		constexpr auto beforeValue =
-			"<label for='"_sl + Field::name + "'>"_sl + Field::title + "</label><br>"_sl +
+		constexpr auto labelHtml = [&]() {
+			if constexpr (Field::title.size() > 0) {
+				return "<label for='"_sl + Field::name + "'>"_sl + Field::title + "</label><br>"_sl;
+			} else {
+				return ""_sl;
+			}
+		}();
+
+		constexpr auto beforeValue = labelHtml +
 			"<input name='"_sl + Field::name + "'"_sl + Field::type::getAttributes() + " value='"_sl;
 		
 		return beforeValue + value + "'><br>"_sl;

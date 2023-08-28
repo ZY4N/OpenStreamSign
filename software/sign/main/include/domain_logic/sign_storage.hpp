@@ -26,18 +26,18 @@ using sign_storage_t = nvs_handler<
 		return ztu::string_literal<CONFIG_PASSWORD_MAX_LEN + 1>{ "jshvfjas"};
 	}>>{},
 
-	nvs_entry<storage_keys::IP_ADDRESS		, default_types::u32_t<[](){ return 1; }>>{},
-	nvs_entry<storage_keys::SUBNETMASK		, default_types::u32_t<[](){ return 1; }>>{},
-	nvs_entry<storage_keys::GATEWAY			, default_types::u32_t<[](){ return 1; }>>{},
+	nvs_entry<storage_keys::IP_ADDRESS		, default_types::u32_t<[]() -> u32 { return 1; }>>{},
+	nvs_entry<storage_keys::SUBNETMASK		, default_types::u32_t<[]() -> u32 { return 1; }>>{},
+	nvs_entry<storage_keys::GATEWAY			, default_types::u32_t<[]() -> u32 { return 1; }>>{},
 
-	nvs_entry<storage_keys::PORT			, default_types::u16_t<[](){ return 1; }>>{},
+	nvs_entry<storage_keys::PORT			, default_types::u16_t<[]() -> u16 { return 1; }>>{},
 
-	nvs_entry<storage_keys::SETUP_DONE		, default_types::u8_t<[](){ return 1; }>>{},
+	nvs_entry<storage_keys::SETUP_DONE		, default_types::u8_t<[]() -> u8 { return 1; }>>{},
 
-	nvs_entry<storage_keys::SECRET			, default_types::array_t<uint8_t, 64 + 32, [](){ return std::array<uint8_t, 64 + 32>{}; }>>{},
+	nvs_entry<storage_keys::SECRET			, default_types::array_t<uint8_t, 64 + 32, []() -> std::array<u8, 64 + 32> { return {}; }>>{},
 
 	nvs_entry<storage_keys::IDLE_ANIMATION	, default_types::object_t<sign_animation,
-		[]() {
+		[]() -> sign_animation{
 			return sign_animation{
 				sign_animations::moving_colors{
 					{
@@ -57,7 +57,7 @@ using sign_storage_t = nvs_handler<
 	>>{},
 	nvs_entry<storage_keys::SETUP_ANIMATION, default_types::object_t<
 		sign_animation,
-		[]() {
+		[]() -> sign_animation {
 			return sign_animation{
 				sign_animations::moving_colors{
 					{

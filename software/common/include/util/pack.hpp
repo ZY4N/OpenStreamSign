@@ -373,17 +373,25 @@ namespace ztu {
 	using erase_first_n = packs::erase_first_n<N, Ts...>::type;
 
 	namespace packs {
-		template<size_t N, typename... Ts>
-			requires (N == sizeof...(Ts))
-		struct erase_last_n {
-			using type = pack<>;
+		template<size_t N, size_t NumTs, typename... Ts>
+			requires (N <= sizeof...(Ts))
+		struct erase_last_n_impl {};
+
+		template<size_t N, size_t NumTs, typename T, typename... Ts>
+			requires (N < NumTs)
+		struct erase_last_n_impl<N, NumTs, T, Ts...> {
+			using erased_rest = erase_last_n_impl<N, sizeof...(Ts), Ts...>::type;
+			using type = prepend<erased_rest, T>::type;
 		};
 
-		template<size_t N, typename T, typename... Ts>
-			requires (N < sizeof...(Ts))
-		struct erase_last_n<N, T, Ts...> {
-			using erased_rest = erase_last_n<N, Ts...>::type;
-			using type = prepend<erased_rest, T>::type;
+		template<size_t N, typename... Ts>
+		struct erase_last_n_impl<N, N, Ts...> {
+			using type = ztu::pack<>;
+		};
+
+		template<size_t N, typename... Ts>
+		struct erase_last_n {
+			using type = erase_last_n_impl<N, sizeof...(Ts), Ts...>::type;
 		};
 	};
 

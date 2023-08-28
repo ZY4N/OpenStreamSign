@@ -5,7 +5,7 @@
 namespace ztu::for_each {
 
 	template<typename... Types>
-	inline constexpr bool types(auto &&f) {
+	inline constexpr bool type(auto &&f) {
 		return (f.template operator()<Types>() || ...);
 	}
 

@@ -19,3 +19,5 @@ using sign_mix_type = color_mixing::type;
 
 using sign_animations = animations<ticksPerColor, numPixels, numFrames, sign_sequencer, sign_scaler>;
 using sign_animation = variable_speed_animation<sign_animations>;
+
+using sign_basic_animation = sign_animation::animation_t;

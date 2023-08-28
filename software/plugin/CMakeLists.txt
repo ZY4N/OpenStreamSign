@@ -17,7 +17,7 @@ set(MACOS_BUNDLEID "com.example.${CMAKE_PROJECT_NAME}")
 # Replace `me@contoso.com` with the maintainer email address you want to put in Linux packages
 set(LINUX_MAINTAINER_EMAIL "me@mymailhost.com")
 
-# Add your custom source files here - header files are optional and only required for visibility
+# Add your custom source files here - header files are optional and only required for visibilitycm
 # e.g. in Xcode or Visual Studio
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE main/plugin-main.cpp)
 
@@ -25,7 +25,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/main)
 
 set(COMMON_BINARY_DIR ${CMAKE_BINARY_DIR}/common)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../common ${COMMON_BINARY_DIR})
-
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

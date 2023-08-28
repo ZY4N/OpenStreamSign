@@ -46,9 +46,9 @@ menu "Sign Configuration"
 		help
 			Default communication port of the sign
 
-	config RECEIVE_TIMEOUT
+	config STATE_TIMEOUT_MS
 		int "Timeout interval for the socket receive function in seconds"
-		default 1
+		default 2000
 		help
 			The receive timeout effectively controlls the frequency
 			with which the system will check if the 'SETUP'-button is pressed. 
@@ -59,7 +59,7 @@ menu "Sign Configuration"
 
 	config RESET_BUTTON_PIN
 		int "Pin for pull down reset button"
-		default 19
+		default 21
 
 	config ANIMATION_TICKS_PER_SECOND
 		int "number of animation frames/ticks per second"

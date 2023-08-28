@@ -49,7 +49,7 @@ namespace color_array_detail {
 			};
 
 			for (const char c : x) {
-				u8 byte = 0xf0;
+				u8 byte = 0x80;
 				if ('0' <= c && c <= '9') {
 					byte = c - '0';
 				} else if ('a' <= c && c <= 'f') {
@@ -58,7 +58,7 @@ namespace color_array_detail {
 					byte = 10 + c - 'A';
 				}
 
-				if (byte & 0xf0) {
+				if (byte & 0x80) {
 					if (not (c == ' ' and pushColor())) {
 						return std::nullopt;
 					}
