@@ -21,8 +21,8 @@ CPackSourceConfig.cmake
 cmake_install.cmake
 install_manifest_obs_rundir.txt
 Makefile
-obs-plugintemplate.cbp
-obs-plugintemplate.so
+oss-plugin.cbp
+oss-plugin.so
 
 
 # ignore generated files
