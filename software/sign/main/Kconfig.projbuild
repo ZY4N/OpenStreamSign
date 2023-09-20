@@ -54,7 +54,7 @@ menu "Sign Configuration"
 			with which the system will check if the 'SETUP'-button is pressed. 
 
 	config LED_DATA_PIN
-		int "Pin for red LED PWM"
+		int "Pin for WS2815 LED data pin"
 		default 23
 
 	config RESET_BUTTON_PIN

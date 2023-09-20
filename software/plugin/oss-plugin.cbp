@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="oss-plugin"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\libobs\;CMake Files\..\common\;CMake Files\cmake\;CMake Files\main\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="oss-plugin">
+				<Option output="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/oss-plugin.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_DEBUG"/>
+					<Add option="-DHAVE_OBSCONFIG_H"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/include"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/lib"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/common/include"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/common/source"/>
+					<Add directory="/usr/include/obs"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 oss-plugin"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="oss-plugin/fast">
+				<Option output="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/oss-plugin.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_DEBUG"/>
+					<Add option="-DHAVE_OBSCONFIG_H"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/include"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/lib"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/common/include"/>
+					<Add directory="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/common/source"/>
+					<Add directory="/usr/include/obs"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/../../../../include/c++/13.1.1/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/13.1.1/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 oss-plugin/fast"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="package">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 package"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="package_source">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 package_source"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="make -j12 -f &quot;/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/common/source/hmac_sha_512_handshake.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/plugin-main.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source/app.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source/platform/asio_socket_connection.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source/platform/openssl_aes_256_engine.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/source/platform/openssl_hmac_sha_512_engine.cpp">
+			<Option target="oss-plugin"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/../../../../../../../../usr/lib/cmake/libobs/libobsConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\libobs\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/../../../../../../../../usr/lib/cmake/libobs/libobsConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\libobs\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/../../../../../../../../usr/lib/cmake/libobs/libobsTargets-relwithdebinfo.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\libobs\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/../../../../../../../../usr/lib/cmake/libobs/libobsTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\usr\lib\cmake\libobs\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/../common/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\..\common\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/cmake/ObsPluginHelpers.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/main/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\main\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

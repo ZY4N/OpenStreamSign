@@ -52,32 +52,32 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/common/cmake_install.cmake")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "obs-plugintemplate_Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "oss-plugin_Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit" TYPE MODULE FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/obs-plugintemplate.so")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit" TYPE MODULE FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/oss-plugin.so")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/obs-plugintemplate.so")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/obs-plugins/64bit/oss-plugin.so")
     endif()
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "obs_rundir")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/RelWithDebInfo/obs-plugins/64bit" TYPE FILE FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/obs-plugintemplate.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/RelWithDebInfo/obs-plugins/64bit" TYPE FILE FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/oss-plugin.so")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "obs_plugins" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/data/obs-plugins/obs-plugintemplate" TYPE DIRECTORY FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/data/" USE_SOURCE_PERMISSIONS)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/data/obs-plugins/oss-plugin" TYPE DIRECTORY FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/data/" USE_SOURCE_PERMISSIONS)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "obs_rundir")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/RelWithDebInfo/data/obs-plugins/obs-plugintemplate" TYPE DIRECTORY FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/data" USE_SOURCE_PERMISSIONS)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/RelWithDebInfo/data/obs-plugins/oss-plugin" TYPE DIRECTORY FILES "/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/data" USE_SOURCE_PERMISSIONS)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

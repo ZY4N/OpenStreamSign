@@ -1,2 +1,2 @@
-/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/rundir/RelWithDebInfo/obs-plugins/64bit/obs-plugintemplate.so
-/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/rundir/RelWithDebInfo/data/obs-plugins/obs-plugintemplate/data/locale/en-US.ini
+/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/rundir/RelWithDebInfo/obs-plugins/64bit/oss-plugin.so
+/home/zy4n/Documents/Code/C++/OBS-SIGN/software/plugin/rundir/RelWithDebInfo/data/obs-plugins/oss-plugin/data/locale/en-US.ini

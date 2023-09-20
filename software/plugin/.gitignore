@@ -16,6 +16,10 @@ build.ninja
 /rundir/
 .ninja_deps
 CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+cmake_install.cmake
+install_manifest_obs_rundir.txt
 Makefile
 obs-plugintemplate.cbp
 obs-plugintemplate.so

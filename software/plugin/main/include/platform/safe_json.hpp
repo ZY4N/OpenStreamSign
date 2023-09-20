@@ -309,8 +309,7 @@ namespace json::transcoding {
 			template<type Type, string_literal Name, typename ValueType = std::monostate>
 			using json_token_base = detail::token_base<type, ValueType, Type, Name>;
 
-			template<type Type, string_literal Name, string_literal... Spellings> requires (sizeof...(Spellings) <
-																							255) // && all Spellings must begin with a different char because ll1
+			template<type Type, string_literal Name, string_literal... Spellings> requires (sizeof...(Spellings) < 255) // && all Spellings must begin with a different char because ll1
 			struct json_basic_token : public json_token_base<Type, Name, uint8_t> {
 				using base_t = json_token_base<Type, Name, uint8_t>;
 				using typename base_t::value_t;
