@@ -57,6 +57,8 @@ struct variable_speed_animation {
 template<u32 TicksPerColor, u32 NumPixels, u32 NumFrames, class color_sequencer_t, class temporal_scaler_t>
 struct animations {
 	static constexpr auto ticksPerColor = TicksPerColor;
+	static constexpr auto numPixels = NumPixels;
+	static constexpr auto numFrames = NumFrames;
 	using uniform_color = animation_detail::uniform_color<color_sequencer_t>;
 	using moving_colors = animation_detail::moving_colors<color_sequencer_t>;
 	using moving_pixel = animation_detail::moving_pixel<color_sequencer_t, temporal_scaler_t>;

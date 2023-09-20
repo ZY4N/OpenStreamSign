@@ -17,7 +17,7 @@
 template<class animations_t>
 void animation_handler<animations_t>::animation_task(void *arg) {
 
-	WS2815_handler leds(static_cast<gpio_num_t>(CONFIG_LED_DATA_PIN), 16);
+	WS2815_handler leds(static_cast<gpio_num_t>(CONFIG_LED_DATA_PIN), animations_t::numPixels);
 
 	auto &[hasNewAnimation, newAnimation] = *static_cast<shared_animation_state*>(arg);
 
@@ -25,7 +25,7 @@ void animation_handler<animations_t>::animation_task(void *arg) {
 
 	animation_t currentAnimation;
 
-	std::array<color, 16> colorFrame{};
+	std::array<color, animations_t::numPixels> colorFrame{};
 	std::fill(colorFrame.begin(), colorFrame.end(), colors::black);
 
 	u32 t = 0;
