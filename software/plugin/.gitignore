@@ -15,14 +15,14 @@ build.ninja
 /CMakeFiles/
 /rundir/
 .ninja_deps
-CMakeCache.txt
-CPackConfig.cmake
-CPackSourceConfig.cmake
-cmake_install.cmake
-install_manifest_obs_rundir.txt
-Makefile
-oss-plugin.cbp
-oss-plugin.so
+./CMakeCache.txt
+./CPackConfig.cmake
+./CPackSourceConfig.cmake
+./cmake_install.cmake
+./install_manifest_obs_rundir.txt
+./Makefile
+./oss-plugin.cbp
+./oss-plugin.so
 
 
 # ignore generated files
