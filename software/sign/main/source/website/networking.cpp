@@ -9,19 +9,25 @@ using networkingForm = html::form<
 
 esp_err_t networking_get_handler(httpd_req_t *req) {
 
+	ESP_LOGI("NET", "net handler started");
+
 	using ztu::string_literal;
 	
-	const auto form = networkingForm::createForm<"Networking", "/secret/">(
+	const auto form = networkingForm::createForm<"Networking", "", "/secret/">(
 		string_literal(CONFIG_DEFAULT_IP_ADDRESS),
 		string_literal(CONFIG_DEFAULT_NETMASK),
 		string_literal(CONFIG_DEFAULT_GATEWAY),
 		string_literal(CONFIG_DEFAULT_PORT)
 	);
 
-	const auto html = html::page::createDefault<"Networking", "/script.js", "/style.css">(form);
+	const auto html = html::page::createDefault<"Networking", "/script.js", "/style.css">(
+		form + getErrorForm(sign.error)
+	);
 
 	httpd_resp_set_type(req, "text/html");
 	httpd_resp_send(req, html.c_str(), HTTPD_RESP_USE_STRLEN);
+
+	ESP_LOGI("NET", "net handler terminated");
 
 	return ESP_OK;
 }

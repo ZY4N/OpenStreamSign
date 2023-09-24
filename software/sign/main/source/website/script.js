@@ -78,14 +78,15 @@ window.addEventListener('load', () => {
 			buffer.pop();
 
 			const xhr = new XMLHttpRequest();
-			xhr.open('POST', window.location.href);
+			xhr.open('POST', (form.action && form.action.length) ? form.action : window.location.href);
 			xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 			xhr.onload = () => {
 				if (xhr.readyState === xhr.DONE) {
-					if (xhr.status === 200) {
-						window.location.href = form.action;
-					} else {
+					const redirectTo = form.getAttribute("redirect");
+					if (xhr.status !== 200) {
 						alert('The Backend died, try again!');
+					} else if (redirectTo && redirectTo.length) {
+						window.location.href = redirectTo;
 					}
 				}
 			};

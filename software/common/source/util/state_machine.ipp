@@ -63,6 +63,7 @@ namespace detail {
 
 		[&]<auto... Is, auto... Js>(std::index_sequence<Is...>, std::index_sequence<Js...>) {
 			auto &&src_alternative = *std::get_if<SrcIndex>(&var); // remove redundant index check
+			// TODO add checks
 			/*if constexpr (std::is_constructible_v<dst_tuple_t,
 				std::add_lvalue_reference_t<std::tuple_element_t<Is, dst_tuple_t>>...,
 				std::add_lvalue_reference_t<Args>...,
@@ -78,7 +79,7 @@ namespace detail {
 			/*} else {
 				// Certain transitions may not compile and that's ok
 				// as long as these transitions are not used at runtime.
-				//assert(false); // TODO find solution
+				//assert(false); 
 				vTaskDelete(nullptr);
 			}*/
 			return false;

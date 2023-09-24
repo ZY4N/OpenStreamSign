@@ -16,19 +16,21 @@ using secretForm = html::form<
 inline constexpr auto SECRET_TAG = "SECRET_HANDLER";
 
 esp_err_t secret_get_handler(httpd_req_t *req) {
-	ztu::string_literal<secretBase64Size + 1> encodedSecret;
+	ztu::string_literal<secretBase64Size + sizeof('\0')> encodedSecret(' ', secretBase64Size);
 
 	{
 		std::array<uint8_t, secretSize> secret;
 		fill_random(secret);
 
-		[[maybe_unused]] const auto success = ztu::base64::encode(secret, encodedSecret.value);
+		[[maybe_unused]] const auto success = ztu::base64::encode(secret, { encodedSecret.begin(), encodedSecret.end() });
 		assert(success);
 	}
 
 	using namespace ztu::string_literals;
-	const auto form = secretForm::createForm<"Secret", "/done/">(encodedSecret, "Copy"_sl);
-	const auto html = html::page::createDefault<"Secret", "/script.js", "/style.css">(form);
+	const auto form = secretForm::createForm<"Secret", "", "/done/">(encodedSecret, "Copy"_sl);
+	const auto html = html::page::createDefault<"Secret", "/script.js", "/style.css">(
+		form + getErrorForm(sign.error)
+	);
 
 	httpd_resp_set_type(req, "text/html");
 	httpd_resp_send(req, html.c_str(), HTTPD_RESP_USE_STRLEN);

@@ -12,8 +12,6 @@
 #include <esp_timer.h>
 #include <util/variant_visit.hpp>
 
-#include "esp_log.h" // TODO remove logs
-
 template<class animations_t>
 void animation_handler<animations_t>::animation_task(void *arg) {
 
@@ -86,6 +84,6 @@ void animation_handler<animations_t>::setAnimation(const animation_t& newAnimati
 
 template<class animations_t>
 animation_handler<animations_t>::~animation_handler() {
-	vTaskDelete(animation_task_handle); // TODO change this shit
+	vTaskDelete(animation_task_handle);
 	delete shared_state;
 }

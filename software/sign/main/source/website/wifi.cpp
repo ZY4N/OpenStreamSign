@@ -6,11 +6,13 @@ using wifiForm = html::form<
 >;
 
 esp_err_t wifi_get_handler(httpd_req_t *req) {
+
 	using namespace ztu::string_literals;
 
-	const auto form = wifiForm::createForm<"Wifi", "/networking/">(""_sl, ""_sl);
-
-	const auto html = html::page::createDefault<"Wifi", "/script.js", "/style.css">(form);
+	const auto form = wifiForm::createForm<"Wifi", "", "/networking/">(""_sl, ""_sl);
+	const auto html = html::page::createDefault<"Wifi", "/script.js", "/style.css">(
+		form + getErrorForm(sign.error)
+	);
 
 	httpd_resp_set_type(req, "text/html");
 	httpd_resp_send(req, html.c_str(), HTTPD_RESP_USE_STRLEN);

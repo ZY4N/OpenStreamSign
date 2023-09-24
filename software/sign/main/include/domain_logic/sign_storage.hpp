@@ -19,11 +19,11 @@ enum class storage_keys : u8 {
 
 using sign_storage_t = nvs_handler<
 	nvs_entry<storage_keys::SSID			, default_types::string_t<CONFIG_SSID_MAX_LEN, [](){
-		return ztu::string_literal<CONFIG_SSID_MAX_LEN + 1>{ "lolmaorofl" };
+		return ztu::string_literal<CONFIG_SSID_MAX_LEN + 1>{ "test_ssid" };
 	}>>{},
 	
 	nvs_entry<storage_keys::PASSWORD		, default_types::string_t<CONFIG_PASSWORD_MAX_LEN, [](){
-		return ztu::string_literal<CONFIG_PASSWORD_MAX_LEN + 1>{ "jshvfjas"};
+		return ztu::string_literal<CONFIG_PASSWORD_MAX_LEN + 1>{ "test_password"};
 	}>>{},
 
 	nvs_entry<storage_keys::IP_ADDRESS		, default_types::u32_t<[]() -> u32 { return 1; }>>{},

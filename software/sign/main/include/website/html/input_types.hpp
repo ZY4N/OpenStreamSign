@@ -20,9 +20,20 @@ namespace input_types {
 			return "type=text data-t=txt"_sl;
 		}
 		static constexpr void parseValue(const char *begin, const char *end, value_t &dst) {
-			const auto numChars = end - begin;
-			std::copy(begin, end, dst.value.begin());
-			dst.value[numChars] = '\0';
+			dst.assign(begin, end - begin);
+		}
+	};
+
+	template<size_t MaxLength>
+	struct info_text {
+		static constexpr auto maxBytes = MaxLength;
+		using value_t = bool;
+		static constexpr auto getAttributes() {
+			using namespace ztu::string_literals;
+			return "type=text data-t=txt readonly"_sl;
+		}
+		static constexpr void parseValue(const char *begin, const char *end, value_t &dst) {
+			dst = false;
 		}
 	};
 
@@ -35,9 +46,7 @@ namespace input_types {
 			return "type=password data-t=txt"_sl;
 		}
 		static constexpr void parseValue(const char *begin, const char *end, value_t &dst) {
-			const auto numChars = end - begin;
-			std::copy(begin, end, dst.value.begin());
-			dst.value[numChars] = '\0';
+			dst.assign(begin, end - begin);
 		}
 	};
 

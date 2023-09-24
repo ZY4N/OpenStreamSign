@@ -252,22 +252,18 @@ namespace default_types {
 			if ((ret = nvs_get_str(handle, key, nullptr, &size)) != ESP_OK)
 				return ret;
 
-			if (size >= type::maxLength)
+			if (size > type::max_size)
 				return ESP_ERR_NVS_VALUE_TOO_LONG;
-			
-			if ((ret = nvs_get_str(handle, key, dst.value.begin(), &size)) != ESP_OK)
-				return ret;
 
-			dst.value.back() = '\0';
+			dst.resize(size);
+			if ((ret = nvs_get_str(handle, key, dst.begin(), &size)) != ESP_OK)
+				return ret;
 
 			return ESP_OK;
 		}
 
 		static esp_err_t store(nvs_handle_t handle, const char *key, const type &src) {
-			const auto end = std::find(src.value.begin(), src.value.end(), '\0');
-			if (end == src.value.end())
-				return ESP_ERR_NVS_VALUE_TOO_LONG;
-			return nvs_set_str(handle, key, src.value.data()); 
+			return nvs_set_str(handle, key, src.c_str()); 
 		}
 	};
 

@@ -9,10 +9,6 @@
 #include <domain_logic/sign_transceiver.hpp>
 
 
-
-/**
- * Main Thread switches between config server and obs sign task
-*/
 void main_task(void *);
 
 
@@ -62,7 +58,10 @@ struct choose_task {
 		main_task_states::SETUP_ERROR,
 		main_task_states::CONFIG_ERROR
 	};
-	static main_task_states run(main_task_states state);
+	static main_task_states run(
+		main_task_states state,
+		std::error_code &error
+	);
 };
 
 
@@ -74,8 +73,8 @@ struct start_setup_server {
 	};
 	static main_task_states run(
 		main_task_states,
-		wifi::access_point_handler &wifi_ap,
 		std::error_code &error,
+		wifi::access_point_handler &wifi_ap,
 		int &num_retries
 	);
 };
@@ -86,6 +85,7 @@ struct wait_for_setup_complete {
 	};
 	static main_task_states run(
 		main_task_states,
+		std::error_code &error,
 		wifi::access_point_handler &wifi_ap
 	);
 };
@@ -96,6 +96,7 @@ struct stop_setup_server {
 	};
 	static main_task_states run(
 		main_task_states,
+		std::error_code &error,
 		wifi::access_point_handler &wifi_ap
 	);
 };
@@ -109,7 +110,7 @@ struct connect_to_wifi {
 	};
 	static main_task_states run(
 		main_task_states,
-		std::error_code& error,
+		std::error_code &error,
 		wifi::client_handler& wifi_client,
 		int& num_retries
 	);

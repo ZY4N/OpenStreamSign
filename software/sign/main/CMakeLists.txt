@@ -18,6 +18,7 @@ idf_component_register(
 		"source/website/secret.cpp"
 		"source/website/style.cpp"
 		"source/website/wifi.cpp"
+		"source/website/reset_error.cpp"
 
 		"source/app/main_task.cpp"
 

@@ -3,26 +3,17 @@
 #include "sign_animation_controller.hpp"
 #include "sign_storage.hpp"
 #include <atomic>
-
-/*
-struct sign {
-	inline static sign_storage_t storage{ };
-	inline static sign_animation_controller_t animation_controller{ };
-	inline static std::atomic_flag switch_task{ ATOMIC_FLAG_INIT };
-};
-*/
-/*
-struct sign {
-	static sign_storage_t storage;
-	static sign_animation_controller_t animation_controller;
-	static std::atomic_flag switch_task;
-};
-*/
+#include <system_error>
 
 struct sign_t {
+	// handle for accessing flash memory
 	sign_storage_t storage;
+	// animation controller for LED strip
 	sign_animation_controller_t animation_controller;
+	// flag to change between setup and sign mode
 	std::atomic_flag switch_task;
+	// last major error
+	std::error_code error;
 };
 
 extern sign_t sign;

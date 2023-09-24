@@ -15,9 +15,10 @@ void main_task(void *) {
 		return;
 	}
 
-	/*ESP_LOGI(TAG, "SETTING FLAG");
+	/*
+	ESP_LOGI(TAG, "Resetting setup done flag");
 	sign.storage.set<storage_keys::SETUP_DONE>(false);
-	ESP_LOGI(TAG, "FLAG SET");*/
+	*/
 
 	sign.animation_controller.init(sign_state::IDLE);
 
@@ -137,7 +138,7 @@ static inline void log_error_code(const char *origin, const std::error_code &e) 
 }
 
 
-main_task_states choose_task::run(main_task_states state) {
+main_task_states choose_task::run(main_task_states state, std::error_code &error) {
 	using enum main_task_states;
 
 	static constexpr auto TAG = main_task_state_name(CHOOSE_TASK);
@@ -153,14 +154,15 @@ main_task_states choose_task::run(main_task_states state) {
 	if (sign.storage.get<storage_keys::SETUP_DONE>()) {
 		return CONNECT_TO_WIFI;
 	} else {
+		sign.error = error;
 		return START_SETUP_SERVER;
 	}
 }
 
 main_task_states start_setup_server::run(
 	main_task_states,
+	std::error_code &error,
 	wifi::access_point_handler& wifi_ap,
-	std::error_code& error,
 	int& num_retries
 ) {
 	using enum main_task_states;
@@ -197,6 +199,7 @@ main_task_states start_setup_server::run(
 
 main_task_states wait_for_setup_complete::run(
 	main_task_states,
+	std::error_code &error,
 	wifi::access_point_handler& wifi_ap
 ) {
 	using enum main_task_states;
@@ -215,6 +218,7 @@ main_task_states wait_for_setup_complete::run(
 
 main_task_states stop_setup_server::run(
 	main_task_states,
+	std::error_code &error,
 	wifi::access_point_handler& wifi_ap
 ) {
 	using enum main_task_states;
@@ -257,9 +261,9 @@ main_task_states connect_to_wifi::run(
 	ESP_LOGI(TAG, "Connecting: SSID: '%s' PW: '%s' IP: '%lu' MASK: '%lu' GATEWAY: '%lu'", ssid.c_str(), password.c_str(), ip, subnetmask, gateway);
 	
 	error = wifi_client.connect(
-		ssid.sv(), password.sv(),
+		ssid.view(), password.view(),
 		ip, subnetmask, gateway,
-		CONFIG_STATE_TIMEOUT_MS
+		10, CONFIG_STATE_TIMEOUT_MS
 	);
 
 	if (error) {
@@ -394,7 +398,7 @@ main_task_states validate_connection::run(
 							state = RECEIVE_CHALLENGE;
 						} else {
 							ESP_LOGE(TAG, "Peer was not able to solve buffer.");
-							return main_task_states::SETUP_ERROR;
+							return main_task_states::CONNECT_TO_PLUGIN;
 						}
 						break;
 					}

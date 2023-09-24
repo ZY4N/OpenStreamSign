@@ -111,7 +111,8 @@
 			"__memory": "cpp",
 			"__errc": "cpp",
 			"__std_stream": "cpp",
-			"__hash": "cpp"
+			"__hash": "cpp",
+			"stack": "cpp"
 		}
 	}
 }

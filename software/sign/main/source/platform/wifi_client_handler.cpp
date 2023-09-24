@@ -116,10 +116,11 @@ std::error_code wifi::client_handler::connect(
 			goto on_error;
 	}
 
-	{
-		bool b = connected.test();
-		ESP_LOGI(TAG, "init %d %zu", b, reinterpret_cast<std::uintptr_t>(m_handle));
-		return make_error_code(b ? OK : ERR_WIFI_NOT_CONNECT);
+
+	if (connected.test()) {
+		return make_error_code(OK);
+	} else {
+		code = static_cast<int>(ERR_WIFI_NOT_CONNECT);
 	}
 
 on_error:
@@ -135,7 +136,6 @@ on_error:
 	if (instance_any_id)
 		esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_any_id);
 
-	ESP_LOGI(TAG, "init 0");
 	return make_error_code(static_cast<esp_error::codes>(code));
 }
 

@@ -8,7 +8,6 @@
 
 namespace html {
 
-
 	using ztu::string_literal;
 
 	template<typename T>
@@ -31,7 +30,12 @@ namespace html {
 	class form {
 	public:
 
-		template<string_literal Title, string_literal URI, size_t... Ns>
+		template<
+			string_literal Title,
+			string_literal PostTo,
+			string_literal RedirectTo,
+			ssize_t... Ns
+		>
 			requires (sizeof...(Ns) == sizeof...(Fields))
 		static constexpr auto createForm(const string_literal<Ns>&... values);
 
@@ -40,7 +44,7 @@ namespace html {
 	private:
 		using value_tuple_t = std::tuple<typename decltype(Fields)::type::value_t...>;
 
-		template<class Field, size_t N>
+		template<class Field, ssize_t N>
 		static constexpr auto createField(const string_literal<N> &value);
 
 		static auto parsePostBody(std::span<char> buffer, value_tuple_t &values);
@@ -48,12 +52,12 @@ namespace html {
 	};
 
 	template<form_field... Fields>
-	template<class Field, size_t N>
+	template<class Field, ssize_t N>
 	constexpr auto form<Fields...>::createField(const string_literal<N> &value) {
 		using namespace ztu::string_literals;
 
 		constexpr auto labelHtml = [&]() {
-			if constexpr (Field::title.size() > 0) {
+			if constexpr (Field::title.length() > 0) {
 				return "<label for='"_sl + Field::name + "'>"_sl + Field::title + "</label><br>"_sl;
 			} else {
 				return ""_sl;
@@ -67,20 +71,33 @@ namespace html {
 	}
 
 	template<form_field... Fields>
-	template<string_literal Title, string_literal URI, size_t... Ns>
+	template<
+		string_literal Title,
+		string_literal PostTo,
+		string_literal RedirectTo,
+		ssize_t... Ns
+	>
 		requires (sizeof...(Ns) == sizeof...(Fields))
 	constexpr auto form<Fields...>::createForm(
 		const string_literal<Ns>&... values
 	) {
 		using namespace ztu::string_literals;
 
-		constexpr auto beforeFields =
-			"<div id='input-box' class='content-container center'>"_sl +
-			"<h1>"_sl + Title + "</h1>"_sl +
-			"<form action='"_sl + URI + "'method='post'>"_sl;
+		constexpr auto title = []() {
+			if constexpr (Title.length() > 0) {
+				return "<h1>"_sl + Title + "</h1>"_sl;
+			} else {
+				return ""_sl;
+			}
+		}();
 
-		constexpr auto afterFields =
-			"<input type=submit value=Ok></form></div>"_sl;
+		constexpr auto beforeFields = (
+			"<div id='input-box' class='content-container'>"_sl + title +
+			"<form action='"_sl + PostTo + "'redirect='"_sl + RedirectTo +
+			"'method='post'>"_sl
+		);
+
+		constexpr auto afterFields = "<input type=submit value=Ok></form></div>"_sl;
 		
 		if constexpr (sizeof...(values) > 0) {
 			return beforeFields + (createField<decltype(Fields)>(values) + ...) + afterFields;
@@ -92,7 +109,7 @@ namespace html {
 	template<form_field... Fields>
 	auto form<Fields...>::getPostData(httpd_req_t *req, bool &success) {
 		constexpr auto BufferSize = ((
-			decltype(Fields)::name.maxLength + 1 +
+			decltype(decltype(Fields)::name)::max_size + 1 +
 			decltype(Fields)::type::maxBytes) + ...
 		) + sizeof...(Fields) - 1;
 		
@@ -127,10 +144,10 @@ namespace html {
 				return false;
 
 			const auto keyBegin = buffer.begin() + keyIndex;
-			if ((bufferEnd - keyBegin) < key.maxLength + 1)
+			if ((bufferEnd - keyBegin) < key.max_length + 1)
 				return false;
 
-			const auto keyEnd = keyBegin + key.maxLength;
+			const auto keyEnd = keyBegin + key.max_length;
 			if (*keyEnd != equalChar)
 				return false;
 
