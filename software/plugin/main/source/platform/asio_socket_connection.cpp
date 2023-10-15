@@ -66,9 +66,9 @@ std::error_code asio_socket_connection::receive(std::span<uint8_t> data) {
 }
 
 void asio_socket_connection::disconnect() {
-	if (isConnected()) {
-		socket.close();
-	}
+	socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+	socket.close();
+	ctx.stop();
 }
 
 bool asio_socket_connection::isConnected() const {
@@ -76,8 +76,7 @@ bool asio_socket_connection::isConnected() const {
 }
 
 asio_socket_connection::~asio_socket_connection() {
-	socket.close();
-	ctx.stop();
+	disconnect();
 }
 
 namespace detail {

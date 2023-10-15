@@ -14,14 +14,21 @@ namespace ztu {
 #define ztu_ic inline constexpr
 #define ztu_nic [[nodiscard]] inline constexpr
 
-// TODO assert needs to be replaced as it stores too much info
 #ifdef __cpp_exceptions
 #define ZTU_ASSERT(exp, error) \
-	if (not (exp)) [[unlikely]] throw (error)
+	if (not (exp)) [[unlikely]] throw (error);
 #else
+#include <stdlib.h>
+#include <stdio.h>
+#define ZTU_TO_STRING_IMPL(x) #x
+#define ZTU_TO_STRING(x) ZTU_TO_STRING_IMPL(x)
 #define ZTU_ASSERT(exp, error) \
-	assert(exp)
+	if (not (exp)) [[unlikely]] { \
+		puts(__FILE__ ":" ZTU_TO_STRING(__LINE__) ": Assertion '" ZTU_TO_STRING(exp) "' failed."); \
+		abort(); \
+	}
 #endif
+
 
 using sl_ssize_t = std::make_signed_t<std::size_t>;
 
@@ -63,7 +70,7 @@ struct string_literal {
 		)
 	ztu_ic string_literal(Chars... chars);
 
-	ztu_ic string_literal(const char c, ssize_t count = 1);
+	ztu_ic string_literal(char c, ssize_t count = 1);
 
 	ztu_ic string_literal(const char* str, std::size_t len);
 
@@ -120,6 +127,14 @@ struct string_literal {
 	ztu_nic std::string_view view() const;
 
 	ztu_nic size_type length() const noexcept;
+
+	ztu_nic size_type find(char c, ssize_t pos = 0) const;
+	ztu_nic size_type find(const char *str, size_type len, ssize_t pos) const;
+	ztu_nic size_type find(const char *str, ssize_t pos = 0) const;
+	ztu_nic size_type find(const std::string_view &str, ssize_t pos = 0) const;
+	ztu_nic size_type find(const std::string &str, ssize_t pos = 0) const;
+	template<sl_ssize_t M>
+	ztu_ic size_type find(const string_literal<M> &str) const;
 
 	ztu_ic this_type& resize(size_type new_size, char fill = ' ');
 
@@ -184,12 +199,12 @@ struct string_literal {
 namespace detail {
 	template<sl_ssize_t MaxLength = std::numeric_limits<sl_ssize_t>::max()>
 	ztu_nic sl_ssize_t strlen(const char* str) {
-		sl_ssize_t index = 0;
-		while (str[index] != '\0') {
-			index++;
-			ZTU_ASSERT(index < MaxLength, std::invalid_argument("given string is not null terminated"));
+		sl_ssize_t len = 0;
+		while (str[len] != '\0') {
+			len++;
+			ZTU_ASSERT(len < MaxLength, std::invalid_argument("given string is not null terminated"));
 		}
-		return index;
+		return len;
 	}
 }
 
@@ -402,6 +417,41 @@ ztu_nic std::string_view string_literal<N>::view() const {
 }
 
 template<sl_ssize_t N> requires (N > 0)
+ztu_nic string_literal<N>::size_type string_literal<N>::find(char c, ssize_t pos) const {
+	const auto m_length = this->length();
+	ZTU_ASSERT(0 <= pos and pos <= m_length, std::out_of_range("Given start pos is out of range."));
+	return std::find(this->begin() + pos, this->begin() + m_length, c) - this->begin();
+}
+
+template<sl_ssize_t N> requires (N > 0)
+ztu_nic string_literal<N>::size_type string_literal<N>::find(const char *str, size_type len, ssize_t pos) const {
+	const auto m_length = this->length();
+	ZTU_ASSERT(0 <= pos and pos <= m_length, std::out_of_range("Given start pos is out of range."));
+	return std::search(this->begin() + pos, this->begin() + m_length, str, str + len) - this->begin();
+}
+
+template<sl_ssize_t N> requires (N > 0)
+ztu_nic string_literal<N>::size_type string_literal<N>::find(const char *str, ssize_t pos) const {
+	return this->find(str, detail::strlen(str), pos);
+}
+
+template<sl_ssize_t N> requires (N > 0)
+ztu_nic string_literal<N>::size_type string_literal<N>::find(const std::string_view &str, ssize_t pos) const {
+	return this->find(str.data(), str.length(), pos);
+}
+
+template<sl_ssize_t N> requires (N > 0)
+ztu_nic string_literal<N>::size_type string_literal<N>::find(const std::string &str, ssize_t pos) const {
+	return this->find(str.data(), str.length(), pos);
+}
+
+template<sl_ssize_t N> requires (N > 0)
+template<sl_ssize_t M>
+ztu_ic string_literal<N>::size_type string_literal<N>::find(const string_literal<M> &str) const {
+	return this->find(str.c_str(), str.length());
+}
+
+template<sl_ssize_t N> requires (N > 0)
 ztu_ic string_literal<N>::this_type& string_literal<N>::resize(size_type new_size, char fill) {
 	ZTU_ASSERT(0 <= new_size and new_size <= max_size, std::length_error("New size exceeds capacity."));
 	m_value[new_size] = '\0';
@@ -420,7 +470,7 @@ ztu_ic string_literal<N>::this_type& string_literal<N>::erase(const_iterator beg
 	auto mutable_end   = this->begin() + (end_it   - this->cbegin());
 	const auto right_begin = mutable_end;
 	const auto right_end = this->begin() + m_size + 1;
-	std::move(right_begin, right_end, mutable_begin);
+	std::copy(right_begin, right_end, mutable_begin);
 	return *this;
 }
 
@@ -438,7 +488,7 @@ ztu_ic string_literal<N>::this_type& string_literal<N>::insert(size_type index, 
 	// move right of index with terminator
 	const auto right_begin = this->begin() + index;
 	const auto right_end = this->begin() + m_size + 1;
-	std::move_backward(right_begin, right_end, right_end + count);
+	std::copy_backward(right_begin, right_end, right_end + count);
 	std::fill_n(this->begin() + index, count, c);
 	return *this;
 }
@@ -451,7 +501,7 @@ ztu_ic string_literal<N>::this_type& string_literal<N>::insert(size_type index, 
 	// move right of index with terminator
 	const auto right_begin = this->begin() + index;
 	const auto right_end = this->begin() + m_size + 1;
-	std::move_backward(right_begin, right_end, right_end + count);
+	std::copy_backward(right_begin, right_end, right_end + count);
 	std::copy_n(str, count, this->begin() + index);
 	return *this;
 }
@@ -490,9 +540,9 @@ ztu_ic string_literal<N>::this_type& string_literal<N>::replace(size_type index,
 	const auto right_end = this->begin() + m_size + 1;
 
 	if (delta_size < 0) {
-		std::move(right_begin, right_end, right_begin + delta_size);
+		std::copy(right_begin, right_end, right_begin + delta_size);
 	} else if (delta_size > 0) {
-		std::move_backward(right_begin, right_end, right_end + delta_size);
+		std::copy_backward(right_begin, right_end, right_end + delta_size);
 	}
 	std::fill_n(this->begin() + index, repeat, c);
 
@@ -509,11 +559,11 @@ ztu_ic string_literal<N>::this_type& string_literal<N>::replace(size_type index,
 
 	const auto right_begin = this->begin() + index + count;
 	const auto right_end = this->begin() + m_size + 1;
-	
+
 	if (delta_size < 0) {
-		std::move(right_begin, right_end, right_begin + delta_size);
+		std::copy(right_begin, right_end, right_begin + delta_size);
 	} else if (delta_size > 0) {
-		std::move_backward(right_begin, right_end, right_end + delta_size);
+		std::copy_backward(right_begin, right_end, right_end + delta_size);
 	}
 	std::copy_n(str, len, this->begin() + index);
 
@@ -678,6 +728,7 @@ constexpr auto operator"" _sl() {
 }
 } // string_literals
 
+#undef ztu_ic 
 #undef ztu_nic
 
 } // ztu
