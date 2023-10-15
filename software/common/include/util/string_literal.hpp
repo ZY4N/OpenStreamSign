@@ -6,8 +6,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <limits>
-#include <cstring>
-#include <cassert>
 
 namespace ztu {
 
